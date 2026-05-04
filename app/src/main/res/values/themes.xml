@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Yournal" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="colorPrimary">@color/accent_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/dark_blue_grey</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurfaceVariant">@color/surface_card</item>
+        <item name="colorOnSurfaceVariant">@color/light_grey</item>
+        <item name="colorOutlineVariant">@color/dark_blue_grey</item>
+        <item name="bottomNavigationStyle">@style/Widget.Yournal.BottomNavigationView</item>
+    </style>
+
+    <style name="Theme.Yournal.Light" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/dark_grey</item>
+        <item name="colorSurfaceVariant">@color/light_grey</item>
+        <item name="colorOnSurfaceVariant">@color/dark_blue_grey</item>
+    </style>
+
+    <style name="Theme.Yournal.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/oled_black</item>
+        <item name="android:statusBarColor">@color/oled_black</item>
+        <item name="android:navigationBarColor">@color/oled_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="colorSurface">@color/oled_black</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurfaceVariant">@color/surface_container_high</item>
+        <item name="colorOnSurfaceVariant">@color/light_grey</item>
+        <item name="colorSurfaceContainerLowest">@color/surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_container_highest</item>
+        <item name="colorSurfaceBright">@color/surface_bright</item>
+        <item name="colorSurfaceDim">@color/oled_black</item>
+        <item name="colorOutline">@color/surface_container_highest</item>
+        <item name="colorOutlineVariant">@color/surface_container_highest</item>
+        <item name="colorPrimaryContainer">@color/surface_container_high</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+    </style>
+
+    <style name="Widget.Yournal.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="itemTextColor">@color/nav_item_colors</item>
+        <item name="itemIconTint">@color/nav_item_colors</item>
+    </style>
+
+    <style name="Theme_Yournal_Custom_Dialog_Style" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+</resources>

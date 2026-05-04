@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="oled_black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="soft_blue_grey">#90A4AE</color>
+    <color name="dark_blue_grey">#263238</color>
+    <color name="dark_grey">#1E1E1E</color>
+    <color name="surface_dark">#121212</color>
+    <color name="surface_card">#1E1E1E</color>
+    <color name="surface_container_lowest">#000000</color>
+    <color name="surface_container_low">#101010</color>
+    <color name="surface_container">#151515</color>
+    <color name="surface_container_high">#1D1D1D</color>
+    <color name="surface_container_highest">#242424</color>
+    <color name="surface_bright">#2B2B2B</color>
+    <color name="light_grey">#B0BEC5</color>
+    <color name="red_error">#CF6679</color>
+    <color name="accent_blue">#4285F4</color>
+    <color name="accent_gold">#FFD700</color>
+    <color name="gradient_start">#6A11CB</color>
+    <color name="gradient_end">#2575FC</color>
+    <color name="tag_bg">#3E3E3E</color>
+    <color name="warning_banner_bg">#2D0C0C</color>
+    <color name="warning_banner_text">#FF5252</color>
+
+    <!-- Accent Presets -->
+    <color name="preset_blue">#4285F4</color>
+    <color name="preset_red">#EA4335</color>
+    <color name="preset_purple">#9C27B0</color>
+    <color name="preset_orange">#FBBC05</color>
+    <color name="preset_green">#34A853</color>
+    <color name="preset_pink">#E91E63</color>
+</resources>
