@@ -21,6 +21,9 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final ImageButton btnSheetAttachment;
+
+  @NonNull
   public final ImageButton btnSheetBold;
 
   @NonNull
@@ -31,9 +34,6 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
 
   @NonNull
   public final Button btnSheetCodeBlock;
-
-  @NonNull
-  public final Button btnSheetCodeFenced;
 
   @NonNull
   public final Button btnSheetCodeInline;
@@ -84,9 +84,9 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
   public final ImageButton btnSheetTask;
 
   private BottomSheetFormatOptionsBinding(@NonNull LinearLayout rootView,
-      @NonNull ImageButton btnSheetBold, @NonNull ImageButton btnSheetBullet,
-      @NonNull ImageButton btnSheetClose, @NonNull Button btnSheetCodeBlock,
-      @NonNull Button btnSheetCodeFenced, @NonNull Button btnSheetCodeInline,
+      @NonNull ImageButton btnSheetAttachment, @NonNull ImageButton btnSheetBold,
+      @NonNull ImageButton btnSheetBullet, @NonNull ImageButton btnSheetClose,
+      @NonNull Button btnSheetCodeBlock, @NonNull Button btnSheetCodeInline,
       @NonNull Button btnSheetEmoji, @NonNull Button btnSheetH1, @NonNull Button btnSheetH2,
       @NonNull Button btnSheetH3, @NonNull Button btnSheetHr, @NonNull ImageButton btnSheetImage,
       @NonNull ImageButton btnSheetItalic, @NonNull ImageButton btnSheetLink,
@@ -94,11 +94,11 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
       @NonNull ImageButton btnSheetStrike, @NonNull Button btnSheetSub, @NonNull Button btnSheetSup,
       @NonNull ImageButton btnSheetTable, @NonNull ImageButton btnSheetTask) {
     this.rootView = rootView;
+    this.btnSheetAttachment = btnSheetAttachment;
     this.btnSheetBold = btnSheetBold;
     this.btnSheetBullet = btnSheetBullet;
     this.btnSheetClose = btnSheetClose;
     this.btnSheetCodeBlock = btnSheetCodeBlock;
-    this.btnSheetCodeFenced = btnSheetCodeFenced;
     this.btnSheetCodeInline = btnSheetCodeInline;
     this.btnSheetEmoji = btnSheetEmoji;
     this.btnSheetH1 = btnSheetH1;
@@ -144,6 +144,12 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btn_sheet_attachment;
+      ImageButton btnSheetAttachment = ViewBindings.findChildViewById(rootView, id);
+      if (btnSheetAttachment == null) {
+        break missingId;
+      }
+
       id = R.id.btn_sheet_bold;
       ImageButton btnSheetBold = ViewBindings.findChildViewById(rootView, id);
       if (btnSheetBold == null) {
@@ -165,12 +171,6 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
       id = R.id.btn_sheet_code_block;
       Button btnSheetCodeBlock = ViewBindings.findChildViewById(rootView, id);
       if (btnSheetCodeBlock == null) {
-        break missingId;
-      }
-
-      id = R.id.btn_sheet_code_fenced;
-      Button btnSheetCodeFenced = ViewBindings.findChildViewById(rootView, id);
-      if (btnSheetCodeFenced == null) {
         break missingId;
       }
 
@@ -270,8 +270,8 @@ public final class BottomSheetFormatOptionsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new BottomSheetFormatOptionsBinding((LinearLayout) rootView, btnSheetBold,
-          btnSheetBullet, btnSheetClose, btnSheetCodeBlock, btnSheetCodeFenced, btnSheetCodeInline,
+      return new BottomSheetFormatOptionsBinding((LinearLayout) rootView, btnSheetAttachment,
+          btnSheetBold, btnSheetBullet, btnSheetClose, btnSheetCodeBlock, btnSheetCodeInline,
           btnSheetEmoji, btnSheetH1, btnSheetH2, btnSheetH3, btnSheetHr, btnSheetImage,
           btnSheetItalic, btnSheetLink, btnSheetNumber, btnSheetQuote, btnSheetStrike, btnSheetSub,
           btnSheetSup, btnSheetTable, btnSheetTask);

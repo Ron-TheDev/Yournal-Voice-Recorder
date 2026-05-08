@@ -1,5 +1,6 @@
 package com.yournal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -90,40 +91,47 @@ public class MainActivity extends AppCompatActivity {
                     if (bottomNav.getSelectedItemId() != id) {
                         bottomNav.getMenu().findItem(id).setChecked(true);
                     }
+                    
+                    if (id == R.id.navigation_home) {
+                        // Stop any background playback when returning to home
+                        Intent stopIntent = new Intent(MainActivity.this, RecordingService.class);
+                        stopIntent.setAction(RecordingService.ACTION_PLAYBACK_STOP);
+                        startService(stopIntent);
+                    }
                 }
 
                 if (immersive) {
                     bottomNav.setVisibility(View.GONE);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                        androidx.core.view.WindowInsetsControllerCompat insetsController =
-                                androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-                        if (insetsController != null) {
-                            insetsController.show(androidx.core.view.WindowInsetsCompat.Type.statusBars());
-                            insetsController.hide(androidx.core.view.WindowInsetsCompat.Type.navigationBars());
-                            insetsController.setSystemBarsBehavior(
-                                    androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-                        }
-                    } else {
-                        getWindow().getDecorView().setSystemUiVisibility(
-                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-                    }
+//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+//                        androidx.core.view.WindowInsetsControllerCompat insetsController =
+//                                androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+//                        if (insetsController != null) {
+//                            insetsController.show(androidx.core.view.WindowInsetsCompat.Type.statusBars());
+//                            insetsController.hide(androidx.core.view.WindowInsetsCompat.Type.navigationBars());
+//                            insetsController.setSystemBarsBehavior(
+//                                    androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+//                        }
+//                    } else {
+//                        getWindow().getDecorView().setSystemUiVisibility(
+//                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//                    }
                 } else {
                     bottomNav.setVisibility(View.VISIBLE);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                        androidx.core.view.WindowInsetsControllerCompat insetsController =
-                                androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-                        if (insetsController != null) {
-                            insetsController.show(androidx.core.view.WindowInsetsCompat.Type.statusBars()
-                                    | androidx.core.view.WindowInsetsCompat.Type.navigationBars());
-                        }
-                    } else {
-                        getWindow().getDecorView().setSystemUiVisibility(
-                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-                    }
+//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+//                        androidx.core.view.WindowInsetsControllerCompat insetsController =
+//                                androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+//                        if (insetsController != null) {
+//                            insetsController.show(androidx.core.view.WindowInsetsCompat.Type.statusBars()
+//                                    | androidx.core.view.WindowInsetsCompat.Type.navigationBars());
+//                        }
+//                    } else {
+//                        getWindow().getDecorView().setSystemUiVisibility(
+//                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+//                    }
                 }
             });
         }

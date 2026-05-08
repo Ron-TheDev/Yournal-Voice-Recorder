@@ -134,14 +134,16 @@
                         app:tint="?attr/colorOnSurface" />
 
                     <ImageButton
-                        android:id="@+id/btn_sheet_table"
+                        android:id="@+id/btn_sheet_attachment"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_columnWeight="1"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Insert table"
-                        android:src="@drawable/ic_format_table"
+                        android:contentDescription="Insert attachment"
+                        android:src="@drawable/ic_format_attachment"
                         app:tint="?attr/colorOnSurface" />
+
+
 
 <!--                    <Button-->
 <!--                        android:id="@+id/btn_sheet_footnote"-->
@@ -174,7 +176,16 @@
                     <Button android:id="@+id/btn_sheet_h2" style="@style/Widget.AppCompat.Button.Borderless" android:text="H2" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
                     <Button android:id="@+id/btn_sheet_h3" style="@style/Widget.AppCompat.Button.Borderless" android:text="H3" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
                     <Button android:id="@+id/btn_sheet_quote" style="@style/Widget.AppCompat.Button.Borderless" android:text="Quote" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
-                    <Button android:id="@+id/btn_sheet_hr" style="@style/Widget.AppCompat.Button.Borderless" android:text="HR" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
+                    <Button android:id="@+id/btn_sheet_hr" style="@style/Widget.AppCompat.Button.Borderless" android:text="Divider" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
+                    <ImageButton
+                        android:id="@+id/btn_sheet_table"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Insert table"
+                        android:src="@drawable/ic_format_table"
+                        app:tint="?attr/colorOnSurface" />
                     <View android:layout_width="0dp" android:layout_height="1dp" android:layout_columnWeight="1" />
                 </GridLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -213,7 +224,7 @@
 
                     <Button android:id="@+id/btn_sheet_code_inline" style="@style/Widget.AppCompat.Button.Borderless" android:text="Inline" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
                     <Button android:id="@+id/btn_sheet_code_block" style="@style/Widget.AppCompat.Button.Borderless" android:text="Block" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
-                    <Button android:id="@+id/btn_sheet_code_fenced" style="@style/Widget.AppCompat.Button.Borderless" android:text="Fenced" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />
+<!--                    <Button android:id="@+id/btn_sheet_code_fenced" style="@style/Widget.AppCompat.Button.Borderless" android:text="Fenced" android:textColor="?attr/colorOnSurface" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" />-->
                 </GridLayout>
             </com.google.android.material.card.MaterialCardView>
 

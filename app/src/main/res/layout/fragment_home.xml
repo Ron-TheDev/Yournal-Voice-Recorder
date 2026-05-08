@@ -1,31 +1,33 @@
- <LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="16dp"
-    android:paddingTop="16dp"
-     android:orientation="vertical"
     android:background="?attr/colorSurface">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
+    <!-- Main Content -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
-        
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp">
+
+        <!-- Header -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
-            
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingBottom="16dp">
-                
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -45,78 +47,88 @@
                     android:id="@+id/filter_chips"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:layout_marginTop="12dp">
+                    android:layout_marginTop="12dp"
+                    android:scrollbars="none">
 
-                    <LinearLayout
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group_filters"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/chip_group_filters"
-                            android:layout_width="match_parent"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"
+                        app:selectionRequired="false"
+                        app:singleSelection="false">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_filter_all"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:singleSelection="false"
-                            app:selectionRequired="false"
-                            app:chipSpacingHorizontal="8dp"
-                            app:chipSpacingVertical="8dp">
+                            android:text="All" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_filter_all"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:text="All" />
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_filter_sort"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sort" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_filter_sort"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:text="Sort" />
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_filter_type"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Type" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_filter_type"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:text="Type" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chip_filter_tags"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@style/Widget.Material3.Chip.Filter"
-                                android:text="Tags" />
-                        </com.google.android.material.chip.ChipGroup>
-                    </LinearLayout>
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_filter_tags"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tags" />
+                    </com.google.android.material.chip.ChipGroup>
                 </HorizontalScrollView>
             </LinearLayout>
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="100dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <!-- Notes List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="120dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </LinearLayout>
 
+    <!-- Search Overlay -->
     <com.google.android.material.search.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="@string/search_hint"
         app:layout_anchor="@id/search_bar">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false"
+            android:padding="16dp" />
     </com.google.android.material.search.SearchView>
 
+    <!-- Add FAB -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:text="Add Item"
+        app:icon="@android:drawable/ic_input_add" />
+
+    <!-- Scroll To Top FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_scroll_up"
         android:layout_width="wrap_content"
@@ -128,6 +140,7 @@
         app:backgroundTint="?attr/colorPrimaryContainer"
         app:tint="?attr/colorOnPrimaryContainer" />
 
+    <!-- FAB Menu -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/fab_menu_container"
         android:layout_width="wrap_content"
@@ -135,7 +148,9 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="96dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -177,15 +192,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_add_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        android:text="Add Item"
-        app:icon="@android:drawable/ic_input_add" />
-
+    <!-- Selection Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_selection"
         android:layout_width="match_parent"
@@ -232,4 +239,4 @@
                 app:tint="?attr/colorOnPrimaryContainer" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
- </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

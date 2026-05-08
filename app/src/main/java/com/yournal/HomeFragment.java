@@ -50,9 +50,9 @@ public class HomeFragment extends Fragment {
     };
 
     private final androidx.activity.result.ActivityResultLauncher<String> exportLauncher =
-            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.CreateDocument("audio/*"), uri -> {
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.CreateDocument("*/*"), uri -> {
                 if (uri != null && pendingExportNote != null) {
-                    com.yournal.util.ShareUtils.exportRecording(requireContext(), pendingExportNote, uri);
+                    com.yournal.util.ShareUtils.exportEntry(requireContext(), pendingExportNote, uri);
                     pendingExportNote = null;
                 }
             });
@@ -78,6 +78,14 @@ public class HomeFragment extends Fragment {
         setupFilterChips();
         observeAccentColor();
         setupSelectionBar();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // If returning from creating a note, scroll to top
+        closeFabMenu();
+        scrollToTop();
     }
 
     private void setupSelectionBar() {
@@ -594,14 +602,6 @@ public class HomeFragment extends Fragment {
         binding.appBarLayout.setExpanded(true, true);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // If returning from creating a note, scroll to top
-        closeFabMenu();
-        scrollToTop();
-    }
-
     private void onNoteClick(com.yournal.model.YournalEntry note, View view) {
         if ("recording".equals(note.noteType)) {
             openRecording(note, view);
@@ -670,13 +670,13 @@ public class HomeFragment extends Fragment {
                     com.yournal.util.ShareUtils.shareNote(requireContext(), note);
                 }
             } else if (id == R.id.action_export) {
+                pendingExportNote = note;
                 if ("recording".equals(note.noteType) || "audionote".equals(note.noteType)) {
-                    pendingExportNote = note;
                     String extension = note.filePath != null && note.filePath.contains(".") ? 
                         note.filePath.substring(note.filePath.lastIndexOf(".")) : ".m4a";
                     exportLauncher.launch(note.noteTitle + extension);
                 } else {
-                    Toast.makeText(requireContext(), "Only recordings can be exported as files", Toast.LENGTH_SHORT).show();
+                    exportLauncher.launch(note.noteTitle + ".md");
                 }
             } else if (id == R.id.action_convert_audio_note) {
                 convertRecordingToAudioNote(note);

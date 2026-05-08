@@ -827,6 +827,9 @@ public class RecorderFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (isBound && isPlaybackMode) {
+            recordingService.stopPlayback();
+        }
         disposables.clear();
         playbackDisposables.clear();
         playbackUiInitialized = false;

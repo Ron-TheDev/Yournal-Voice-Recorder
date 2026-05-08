@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
@@ -29,7 +29,7 @@ import java.lang.String;
 
 public final class FragmentHomeBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final CoordinatorLayout rootView;
 
   @NonNull
   public final AppBarLayout appBarLayout;
@@ -94,17 +94,17 @@ public final class FragmentHomeBinding implements ViewBinding {
   @NonNull
   public final TextView tvSelectionCount;
 
-  private FragmentHomeBinding(@NonNull LinearLayout rootView, @NonNull AppBarLayout appBarLayout,
-      @NonNull ImageButton btnClearSelection, @NonNull ImageButton btnDeleteSelected,
-      @NonNull MaterialCardView cardSelection, @NonNull Chip chipFilterAll,
-      @NonNull Chip chipFilterSort, @NonNull Chip chipFilterTags, @NonNull Chip chipFilterType,
-      @NonNull ChipGroup chipGroupFilters, @NonNull ExtendedFloatingActionButton fabAddItem,
-      @NonNull MaterialButton fabMenuAddDrawing, @NonNull MaterialButton fabMenuAddNote,
-      @NonNull MaterialButton fabMenuAddRecording, @NonNull MaterialCardView fabMenuContainer,
-      @NonNull FloatingActionButton fabScrollUp, @NonNull HorizontalScrollView filterChips,
-      @NonNull RecyclerView recyclerView, @NonNull SearchBar searchBar,
-      @NonNull RecyclerView searchRecyclerView, @NonNull SearchView searchView,
-      @NonNull TextView tvSelectionCount) {
+  private FragmentHomeBinding(@NonNull CoordinatorLayout rootView,
+      @NonNull AppBarLayout appBarLayout, @NonNull ImageButton btnClearSelection,
+      @NonNull ImageButton btnDeleteSelected, @NonNull MaterialCardView cardSelection,
+      @NonNull Chip chipFilterAll, @NonNull Chip chipFilterSort, @NonNull Chip chipFilterTags,
+      @NonNull Chip chipFilterType, @NonNull ChipGroup chipGroupFilters,
+      @NonNull ExtendedFloatingActionButton fabAddItem, @NonNull MaterialButton fabMenuAddDrawing,
+      @NonNull MaterialButton fabMenuAddNote, @NonNull MaterialButton fabMenuAddRecording,
+      @NonNull MaterialCardView fabMenuContainer, @NonNull FloatingActionButton fabScrollUp,
+      @NonNull HorizontalScrollView filterChips, @NonNull RecyclerView recyclerView,
+      @NonNull SearchBar searchBar, @NonNull RecyclerView searchRecyclerView,
+      @NonNull SearchView searchView, @NonNull TextView tvSelectionCount) {
     this.rootView = rootView;
     this.appBarLayout = appBarLayout;
     this.btnClearSelection = btnClearSelection;
@@ -131,7 +131,7 @@ public final class FragmentHomeBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public CoordinatorLayout getRoot() {
     return rootView;
   }
 
@@ -282,7 +282,7 @@ public final class FragmentHomeBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentHomeBinding((LinearLayout) rootView, appBarLayout, btnClearSelection,
+      return new FragmentHomeBinding((CoordinatorLayout) rootView, appBarLayout, btnClearSelection,
           btnDeleteSelected, cardSelection, chipFilterAll, chipFilterSort, chipFilterTags,
           chipFilterType, chipGroupFilters, fabAddItem, fabMenuAddDrawing, fabMenuAddNote,
           fabMenuAddRecording, fabMenuContainer, fabScrollUp, filterChips, recyclerView, searchBar,

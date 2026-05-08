@@ -3102,6 +3102,7 @@ drawable fingerprint_dialog_fp_icon
 drawable ic_arrow_back_black_24
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
+drawable ic_format_attachment
 drawable ic_format_bold
 drawable ic_format_image
 drawable ic_format_italic
@@ -3332,11 +3333,11 @@ id btn_restore_selected
 id btn_save
 id btn_secondary
 id btn_share
+id btn_sheet_attachment
 id btn_sheet_bold
 id btn_sheet_bullet
 id btn_sheet_close
 id btn_sheet_code_block
-id btn_sheet_code_fenced
 id btn_sheet_code_inline
 id btn_sheet_emoji
 id btn_sheet_h1

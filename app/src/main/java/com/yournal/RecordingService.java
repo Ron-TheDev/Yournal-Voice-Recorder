@@ -353,6 +353,9 @@ public class RecordingService extends Service {
     public void onDestroy() {
         if (recorder.isRecording()) recorder.stopRecording();
         recorder.release();
+        if (player != null) {
+            player.stopPlaying();
+        }
         disposables.clear();
         super.onDestroy();
     }

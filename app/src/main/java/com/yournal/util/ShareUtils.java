@@ -35,19 +35,26 @@ public class ShareUtils {
         context.startActivity(Intent.createChooser(intent, "Share Recording"));
     }
 
-    public static void exportRecording(Context context, YournalEntry note, Uri destinationUri) {
-        if (note.filePath == null) {
-            Toast.makeText(context, "No recording found to export", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try (InputStream is = context.getContentResolver().openInputStream(Uri.parse(note.filePath));
-             OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
-            
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = is.read(buffer)) != -1) {
-                os.write(buffer, 0, read);
+    public static void exportEntry(Context context, YournalEntry note, Uri destinationUri) {
+        try (OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
+            if ("note".equals(note.noteType)) {
+                String content = note.noteTitle + "\n\n" + (note.noteContent != null ? note.noteContent : "");
+                os.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            } else if (note.filePath != null) {
+                try (InputStream is = context.getContentResolver().openInputStream(Uri.parse(note.filePath))) {
+                    if (is == null) {
+                        Toast.makeText(context, "Source file not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    byte[] buffer = new byte[8192];
+                    int read;
+                    while ((read = is.read(buffer)) != -1) {
+                        os.write(buffer, 0, read);
+                    }
+                }
+            } else {
+                Toast.makeText(context, "No content found to export", Toast.LENGTH_SHORT).show();
+                return;
             }
             Toast.makeText(context, "Exported successfully", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

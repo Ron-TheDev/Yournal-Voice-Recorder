@@ -489,18 +489,19 @@ public class NoteDetailFragment extends Fragment {
             insertMarkdownToken("[text](https://example.com)");
             return true;
         });
-        sheet.findViewById(R.id.btn_sheet_image).setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        sheet.findViewById(R.id.btn_sheet_image).setOnClickListener(v -> launchAttachmentPicker("image/*"));
+        sheet.findViewById(R.id.btn_sheet_attachment).setOnClickListener(v -> showAttachmentTypePicker());
         sheet.findViewById(R.id.btn_sheet_table).setOnClickListener(v ->
                 insertMarkdownToken("\n| Col 1 | Col 2 |\n| --- | --- |\n|  |  |\n"));
 //        sheet.findViewById(R.id.btn_sheet_footnote).setOnClickListener(v -> insertMarkdownToken("[^1]"));
 
         sheet.findViewById(R.id.btn_sheet_code_inline).setOnClickListener(v -> insertMarkdown("`", "`"));
         sheet.findViewById(R.id.btn_sheet_code_block).setOnClickListener(v -> insertCodeBlockTemplate());
-        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnClickListener(v -> insertCodeBlockTemplate());
-        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnLongClickListener(v -> {
-            showCodeVariantSelector();
-            return true;
-        });
+//        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnClickListener(v -> insertCodeBlockTemplate());
+//        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnLongClickListener(v -> {
+//            showCodeVariantSelector();
+//            return true;
+//        });
 
         sheet.findViewById(R.id.btn_sheet_sup).setOnClickListener(v -> insertMarkdown("^", "^"));
         sheet.findViewById(R.id.btn_sheet_sub).setOnClickListener(v -> insertMarkdown("~", "~"));
@@ -604,6 +605,36 @@ public class NoteDetailFragment extends Fragment {
                     }
                 })
                 .show();
+    }
+
+    private void showAttachmentTypePicker() {
+        String[] options = {"Image", "Video", "Audio", "PDF", "Other file", "Recording"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Attach")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        launchAttachmentPicker("image/*");
+                    } else if (which == 1) {
+                        launchAttachmentPicker("video/*");
+                    } else if (which == 2) {
+                        launchAttachmentPicker("audio/*");
+                    } else if (which == 3) {
+                        launchAttachmentPicker("application/pdf");
+                    } else if (which == 4) {
+                        launchAttachmentPicker("*/*");
+                    } else {
+                        showRecordingAttachmentDialog();
+                    }
+                })
+                .show();
+    }
+
+    private void launchAttachmentPicker(String... mimeTypes) {
+        if (mimeTypes == null || mimeTypes.length == 0) {
+            attachmentPickerLauncher.launch(new String[]{"*/*"});
+        } else {
+            attachmentPickerLauncher.launch(mimeTypes);
+        }
     }
 
     private void showRecordingAttachmentDialog() {
