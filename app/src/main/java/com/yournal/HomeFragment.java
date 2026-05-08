@@ -75,8 +75,7 @@ public class HomeFragment extends Fragment {
         setupRecyclerView();
         setupFab();
         setupSearch();
-        setupFilters();
-        setupTags();
+        setupFilterChips();
         observeAccentColor();
         setupSelectionBar();
     }
@@ -220,128 +219,130 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void setupFilters() {
-        homeViewModel.getTypeFilter().observe(getViewLifecycleOwner(), type -> {
-            if (type == null) {
-                binding.chipFilter.setText("All / Off");
-                return;
-            }
-            switch (type) {
-                case "note":
-                    binding.chipFilter.setText("Notes");
-                    break;
-                case "recording":
-                    binding.chipFilter.setText("Recordings");
-                    break;
-                case "drawing":
-                    binding.chipFilter.setText("Drawings");
-                    break;
-                case "audionote":
-                    binding.chipFilter.setText("Audio Notes");
-                    break;
-                default:
-                    binding.chipFilter.setText(type);
-                    break;
-            }
-        });
-
-        binding.chipSort.setOnClickListener(v -> {
+    private void setupFilterChips() {
+        binding.chipFilterAll.setOnClickListener(v -> {
             if (hapticHelper != null) hapticHelper.vibrateSelection();
-            showSortMenu(v);
+            binding.searchView.getEditText().setText("");
+            homeViewModel.clearTypeFilter();
+            homeViewModel.clearTagFilter();
+            homeViewModel.setSortMode(0);
         });
-        binding.chipFilter.setOnClickListener(v -> {
+
+        binding.chipFilterSort.setOnClickListener(v -> {
             if (hapticHelper != null) hapticHelper.vibrateSelection();
-            showFilterMenu(v);
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Yournal_Custom_Dialog_Style)
+                    .setTitle("Sort order")
+                    .setSingleChoiceItems(new CharSequence[]{"Date (Newest)", "Date (Oldest)", "A-Z (Title)", "Z-A (Title)"}, 
+                            homeViewModel.getSortModeValue(), (dialog, which) -> {
+                        homeViewModel.setSortMode(which);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         });
-    }
 
-    private void showFilterMenu(View v) {
-        PopupMenu popup = new PopupMenu(requireContext(), v);
-        popup.getMenu().add(0, 0, 0, "Notes");
-        popup.getMenu().add(0, 1, 1, "Recordings");
-        popup.getMenu().add(0, 2, 2, "Drawings");
-        popup.getMenu().add(0, 3, 3, "Audio Notes");
-        popup.getMenu().add(0, 4, 4, "All / Off");
+        binding.chipFilterType.setOnClickListener(v -> {
+            if (hapticHelper != null) hapticHelper.vibrateSelection();
+            String[] types = {"Notes", "Recordings", "Drawings", "Audio Notes", "All / Off"};
+            String currentType = homeViewModel.getTypeFilter().getValue();
+            int checkedItem = 4;
+            if ("note".equals(currentType)) checkedItem = 0;
+            else if ("recording".equals(currentType)) checkedItem = 1;
+            else if ("drawing".equals(currentType)) checkedItem = 2;
+            else if ("audionote".equals(currentType)) checkedItem = 3;
 
-        popup.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case 0:
-                    homeViewModel.setTypeFilter("note");
-                    break;
-                case 1:
-                    homeViewModel.setTypeFilter("recording");
-                    break;
-                case 2:
-                    homeViewModel.setTypeFilter("drawing");
-                    break;
-                case 3:
-                    homeViewModel.setTypeFilter("audionote");
-                    break;
-                case 4:
-                default:
-                    homeViewModel.clearTypeFilter();
-                    break;
-            }
-            return true;
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Yournal_Custom_Dialog_Style)
+                    .setTitle("Type")
+                    .setSingleChoiceItems(types, checkedItem, (dialog, which) -> {
+                        switch (which) {
+                            case 0: homeViewModel.setTypeFilter("note"); break;
+                            case 1: homeViewModel.setTypeFilter("recording"); break;
+                            case 2: homeViewModel.setTypeFilter("drawing"); break;
+                            case 3: homeViewModel.setTypeFilter("audionote"); break;
+                            case 4: default: homeViewModel.clearTypeFilter(); break;
+                        }
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         });
-        popup.show();
-    }
 
-    private void showSortMenu(View v) {
-        PopupMenu popup = new PopupMenu(requireContext(), v);
-        popup.getMenu().add(0, 0, 0, "Date (Newest)");
-        popup.getMenu().add(0, 1, 1, "Date (Oldest)");
-        popup.getMenu().add(0, 2, 2, "A-Z (Title)");
-        popup.getMenu().add(0, 3, 3, "Z-A (Title)");
+        binding.chipFilterTags.setOnClickListener(v -> {
+            if (hapticHelper != null) hapticHelper.vibrateSelection();
+            showLabelFilterDialog();
+        });
+
+        homeViewModel.getTypeFilter().observe(getViewLifecycleOwner(), type -> refreshFilterChipLabels());
+        homeViewModel.getTagFilter().observe(getViewLifecycleOwner(), tag -> refreshFilterChipLabels());
+        homeViewModel.getSortMode().observe(getViewLifecycleOwner(), sort -> refreshFilterChipLabels());
         
-        popup.setOnMenuItemClickListener(item -> {
-            homeViewModel.setSortMode(item.getItemId());
-            binding.chipSort.setText(item.getTitle());
-            return true;
-        });
-        popup.show();
-    }
-
-    private void setupTags() {
         homeViewModel.getAllUniqueTags().observe(getViewLifecycleOwner(), tags -> {
             cachedTags.clear();
             if (tags != null) {
                 cachedTags.addAll(tags);
             }
-            renderTagChips();
         });
-
-        homeViewModel.getTagFilter().observe(getViewLifecycleOwner(), tag -> renderTagChips());
+        
+        refreshFilterChipLabels();
     }
 
-    private void renderTagChips() {
+    private void showLabelFilterDialog() {
+        if (!isAdded()) return;
+
+        List<String> displayTags = new ArrayList<>();
+        displayTags.add("All tags");
+        displayTags.addAll(cachedTags);
+
+        String currentTag = homeViewModel.getTagFilter().getValue();
+        int checkedItem = 0;
+        if (currentTag != null && cachedTags.contains(currentTag)) {
+            checkedItem = cachedTags.indexOf(currentTag) + 1;
+        }
+
+        CharSequence[] items = displayTags.toArray(new CharSequence[0]);
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext(), R.style.Theme_Yournal_Custom_Dialog_Style)
+                .setTitle("Tags")
+                .setSingleChoiceItems(items, checkedItem, (dialog, which) -> {
+                    if (which == 0) {
+                        homeViewModel.clearTagFilter();
+                    } else {
+                        homeViewModel.setTagFilter(displayTags.get(which));
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void refreshFilterChipLabels() {
         if (binding == null) return;
-        binding.chipGroupTags.removeAllViews();
+        
+        int sortMode = homeViewModel.getSortModeValue();
+        String sortText = "Date (Newest)";
+        if (sortMode == 1) sortText = "Date (Oldest)";
+        else if (sortMode == 2) sortText = "A-Z (Title)";
+        else if (sortMode == 3) sortText = "Z-A (Title)";
+        binding.chipFilterSort.setText("Sort: " + sortText);
 
-        // Add "Add Tag" chip
-        Chip addChip = new Chip(requireContext());
-        addChip.setText("+ Tag");
-        addChip.setOnClickListener(v -> {
-            if (hapticHelper != null) hapticHelper.vibrateSelection();
-            showAddTagDialog();
-        });
-        binding.chipGroupTags.addView(addChip);
+        String type = homeViewModel.getTypeFilter().getValue();
+        if (type == null) {
+            binding.chipFilterType.setText("Type: All");
+        } else {
+            switch (type) {
+                case "note": binding.chipFilterType.setText("Type: Notes"); break;
+                case "recording": binding.chipFilterType.setText("Type: Recordings"); break;
+                case "drawing": binding.chipFilterType.setText("Type: Drawings"); break;
+                case "audionote": binding.chipFilterType.setText("Type: Audio Notes"); break;
+                default: binding.chipFilterType.setText("Type: " + type); break;
+            }
+        }
 
-        String selectedTag = homeViewModel.getTagFilter().getValue();
-        for (String tag : cachedTags) {
-            Chip chip = (Chip) LayoutInflater.from(requireContext()).inflate(R.layout.layout_filter_chip, binding.chipGroupTags, false);
-            chip.setText(tag);
-            chip.setCheckable(true);
-            chip.setChecked(tag != null && tag.equals(selectedTag));
-            chip.setOnClickListener(v -> {
-                if (hapticHelper != null) hapticHelper.vibrateSelection();
-                if (chip.isChecked()) {
-                    homeViewModel.setTagFilter(tag);
-                } else {
-                    homeViewModel.clearTagFilter();
-                }
-            });
-            binding.chipGroupTags.addView(chip);
+        String tag = homeViewModel.getTagFilter().getValue();
+        if (tag == null) {
+            binding.chipFilterTags.setText("Tags: All");
+        } else {
+            binding.chipFilterTags.setText("Tag: " + tag);
         }
     }
 

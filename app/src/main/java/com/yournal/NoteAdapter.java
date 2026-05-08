@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yournal.databinding.ItemNoteBinding;
-import com.yournal.databinding.ItemRecordingBinding;
+import com.yournal.databinding.ItemMainBinding;
 import com.yournal.model.YournalEntry;
 import com.yournal.util.MarkdownRendererFactory;
 import com.yournal.util.MotionConfig;
@@ -98,12 +97,7 @@ public class NoteAdapter extends ListAdapter<YournalEntry, RecyclerView.ViewHold
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_RECORDING) {
-            ItemRecordingBinding binding = ItemRecordingBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-            return new RecordingViewHolder(binding);
-        }
-
-        ItemNoteBinding binding = ItemNoteBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ItemMainBinding binding = ItemMainBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         if (markwon == null) {
             markwon = MarkdownRendererFactory.create(parent.getContext());
         }
@@ -113,16 +107,14 @@ public class NoteAdapter extends ListAdapter<YournalEntry, RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         YournalEntry note = getItem(position);
-        if (holder instanceof RecordingViewHolder) {
-            bindRecording((RecordingViewHolder) holder, note);
-        } else if (holder instanceof NoteViewHolder) {
-            bindNote((NoteViewHolder) holder, note);
-        }
+        bindNote((NoteViewHolder) holder, note);
     }
 
     private void bindNote(NoteViewHolder holder, YournalEntry note) {
         View root = holder.binding.getRoot();
-        ViewCompat.setTransitionName(root, MotionConfig.noteTransitionName(note.id));
+        boolean isRecording = "recording".equals(note.noteType);
+        
+        ViewCompat.setTransitionName(root, isRecording ? MotionConfig.recordingTransitionName(note.id) : MotionConfig.noteTransitionName(note.id));
         holder.binding.tvTitle.setText(note.noteTitle);
         holder.binding.tvTypeLabel.setText(formatTypeLabel(note.noteType));
 
@@ -130,10 +122,20 @@ public class NoteAdapter extends ListAdapter<YournalEntry, RecyclerView.ViewHold
         holder.binding.tvDate.setText(dateStr);
         holder.binding.tvDate.setVisibility(View.VISIBLE);
 
-        markwon.setMarkdown(holder.binding.tvContent, note.noteContent != null ? note.noteContent : "");
+        // Visibility logic based on note type
+        if (isRecording) {
+            holder.binding.tvContent.setVisibility(View.GONE);
+            holder.binding.ivRecordingThumbnail.setVisibility(View.VISIBLE);
+//            holder.binding.ivRecordingThumbnail.setImageResource(android.R.drawable.ic_btn_speak_now);
+        } else {
+            holder.binding.tvContent.setVisibility(View.VISIBLE);
+            holder.binding.ivRecordingThumbnail.setVisibility(View.GONE);
+            markwon.setMarkdown(holder.binding.tvContent, note.noteContent != null ? note.noteContent : "");
+        }
 
         bindTags(holder.binding.tvTags, note.tags);
         holder.binding.ivFavorite.setVisibility(note.isFavorite ? View.VISIBLE : View.GONE);
+        
         holder.binding.tvTags.setOnClickListener(v -> {
             if (tagsClickListener != null) tagsClickListener.onTagsClick(note, v);
         });
@@ -152,37 +154,7 @@ public class NoteAdapter extends ListAdapter<YournalEntry, RecyclerView.ViewHold
         bindRootInteractions(root, note);
     }
 
-    private void bindRecording(RecordingViewHolder holder, YournalEntry note) {
-        View root = holder.binding.getRoot();
-        ViewCompat.setTransitionName(root, MotionConfig.recordingTransitionName(note.id));
-        holder.binding.tvTitle.setText(note.noteTitle);
-        holder.binding.tvTypeLabel.setText(formatTypeLabel(note.noteType));
 
-        String dateStr = new java.text.SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new java.util.Date(note.dateCreated));
-        holder.binding.tvDate.setText(dateStr);
-        holder.binding.tvDate.setVisibility(View.VISIBLE);
-
-        bindTags(holder.binding.tvTags, note.tags);
-        holder.binding.ivFavorite.setVisibility(note.isFavorite ? View.VISIBLE : View.GONE);
-        holder.binding.ivRecordingOverlay.setVisibility(View.VISIBLE);
-        holder.binding.ivRecordingThumbnail.setImageResource(android.R.drawable.ic_btn_speak_now);
-        holder.binding.tvTags.setOnClickListener(v -> {
-            if (tagsClickListener != null) tagsClickListener.onTagsClick(note, v);
-        });
-
-        if (accentColor != 0) {
-            holder.binding.tvTags.setTextColor(accentColor);
-        }
-
-        bindDeleteCountdown(holder.binding.tvDeleteCountdown, note);
-        bindSelection(holder.binding.cbSelect, holder.binding.btnOverflow, note.id);
-
-        holder.binding.btnOverflow.setOnClickListener(v -> {
-            if (noteOverflowListener != null) noteOverflowListener.onOverflowClick(note, v);
-        });
-
-        bindRootInteractions(root, note);
-    }
 
     private void bindSelection(android.widget.CheckBox selectBox, View overflowButton, int noteId) {
         selectBox.setVisibility(isSelectionMode ? View.VISIBLE : View.GONE);
@@ -276,18 +248,9 @@ public class NoteAdapter extends ListAdapter<YournalEntry, RecyclerView.ViewHold
     };
 
     static class NoteViewHolder extends RecyclerView.ViewHolder {
-        final ItemNoteBinding binding;
+        final ItemMainBinding binding;
 
-        NoteViewHolder(ItemNoteBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-        }
-    }
-
-    static class RecordingViewHolder extends RecyclerView.ViewHolder {
-        final ItemRecordingBinding binding;
-
-        RecordingViewHolder(ItemRecordingBinding binding) {
+        NoteViewHolder(ItemMainBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

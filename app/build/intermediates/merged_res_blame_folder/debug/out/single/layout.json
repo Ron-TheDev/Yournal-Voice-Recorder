@@ -1,0 +1,54 @@
+[
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\item_attachment.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\item_attachment.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_note_detail.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_note_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\dialog_manage_tags.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\dialog_manage_tags.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_recorder.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_recorder.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\bottom_sheet_format_options.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\bottom_sheet_format_options.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_home.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_home.xml"
+    },
+    {
+        "merged": "com.yournal.app-mergeDebugResources-54:/layout/bottom_sheet_format_options.xml",
+        "source": "com.yournal.app-main-57:/layout/bottom_sheet_format_options.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_settings.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\item_main.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\item_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_recycle_bin.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_recycle_bin.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\layout_filter_chip.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\layout_filter_chip.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-mergeDebugResources-54:\\layout\\fragment_transcription.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\8.5\\com.yournal.app-main-57:\\layout\\fragment_transcription.xml"
+    }
+]

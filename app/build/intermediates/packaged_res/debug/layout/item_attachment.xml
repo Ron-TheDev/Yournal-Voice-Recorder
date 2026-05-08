@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="1dp"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/iv_attachment_thumbnail"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/bg_card_rounded"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_report_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_attachment_overlay"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="8dp"
+            android:src="@android:drawable/ic_media_play"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/iv_attachment_thumbnail"
+            app:layout_constraintEnd_toEndOf="@id/iv_attachment_thumbnail"
+            app:tint="@android:color/white" />
+
+        <TextView
+            android:id="@+id/tv_attachment_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Attachment"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/btn_open_attachment"
+            app:layout_constraintStart_toEndOf="@id/iv_attachment_thumbnail"
+            app:layout_constraintTop_toTopOf="@id/iv_attachment_thumbnail" />
+
+        <TextView
+            android:id="@+id/tv_attachment_meta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="PDF"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/btn_open_attachment"
+            app:layout_constraintStart_toEndOf="@id/iv_attachment_thumbnail"
+            app:layout_constraintTop_toBottomOf="@id/tv_attachment_name" />
+
+        <ImageButton
+            android:id="@+id/btn_open_attachment"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Open attachment"
+            android:src="@android:drawable/ic_menu_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnSurface" />
+
+        <LinearLayout
+            android:id="@+id/audio_controls"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_attachment_thumbnail">
+
+            <ImageButton
+                android:id="@+id/btn_audio_play_pause"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Play or pause"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="?attr/colorOnSurface" />
+
+            <SeekBar
+                android:id="@+id/seek_audio_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_attachment_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="0:00 / 0:00"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

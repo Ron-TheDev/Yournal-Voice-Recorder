@@ -87,6 +87,14 @@ public class HomeViewModel extends AndroidViewModel {
         sortMode.setValue(mode);
     }
 
+    public LiveData<Integer> getSortMode() {
+        return sortMode;
+    }
+
+    public int getSortModeValue() {
+        return sortMode.getValue() != null ? sortMode.getValue() : 0;
+    }
+
     public void setTypeFilter(String type) {
         typeFilter.setValue(type);
     }

@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 
@@ -23,7 +25,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import com.yournal.databinding.FragmentNoteDetailBinding;
 import com.yournal.model.NoteAttachment;
@@ -34,6 +38,8 @@ import com.yournal.util.AttachmentMarkdown;
 import com.yournal.util.MotionConfig;
 import com.yournal.util.MarkdownRendererFactory;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.ArrayDeque;
 import java.util.List;
 
 import io.noties.markwon.Markwon;
@@ -55,6 +61,11 @@ public class NoteDetailFragment extends Fragment {
     private MediaPlayer audioPlayer;
     private final Handler audioHandler = new Handler(Looper.getMainLooper());
     private boolean audioPreparing = false;
+    private BottomSheetDialog formatBottomSheetDialog;
+    private final Deque<String> undoStack = new ArrayDeque<>();
+    private final Deque<String> redoStack = new ArrayDeque<>();
+    private boolean isProgrammaticTextChange = false;
+    private static final int MAX_HISTORY_SIZE = 100;
     private final Runnable audioProgressUpdater = new Runnable() {
         @Override
         public void run() {
@@ -71,6 +82,13 @@ public class NoteDetailFragment extends Fragment {
                 if (uris != null && !uris.isEmpty()) {
                     handlePickedAttachments(uris);
                 }
+            });
+
+    private final androidx.activity.result.ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.GetContent(), uri -> {
+                if (uri == null) return;
+                String markdown = "![" + resolveImageLabel(uri) + "](" + uri + ")";
+                insertMarkdownToken(markdown);
             });
 
     @Override
@@ -121,6 +139,8 @@ public class NoteDetailFragment extends Fragment {
 
         setupBackNavigation();
         setupToolbar();
+        setupKeyboardAwareFormatBar();
+        setupUndoRedoHistory();
         setupFormattingButtons();
         setupAttachmentPreview();
         setupAudioPlayer();
@@ -153,9 +173,48 @@ public class NoteDetailFragment extends Fragment {
     private void setupFormattingButtons() {
         binding.btnFormatBold.setOnClickListener(v -> insertMarkdown("**", "**"));
         binding.btnFormatItalic.setOnClickListener(v -> insertMarkdown("*", "*"));
-        binding.btnFormatBullet.setOnClickListener(v -> insertMarkdownAtLineStart("- "));
-        binding.btnFormatNumber.setOnClickListener(v -> insertMarkdownAtLineStart("1. "));
-        binding.btnFormatAttachment.setOnClickListener(v -> showAttachmentOptions());
+        binding.btnFormatStrike.setOnClickListener(v -> insertMarkdown("~~", "~~"));
+        binding.btnFormatUndo.setOnClickListener(v -> performUndo());
+        binding.btnFormatRedo.setOnClickListener(v -> performRedo());
+        binding.btnFormatExpand.setOnClickListener(v -> showFormatBottomSheet());
+    }
+
+    private void setupKeyboardAwareFormatBar() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            int imeBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+            int navBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            int effectiveBottom = Math.max(imeBottom, navBottom);
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) binding.formatBar.getLayoutParams();
+            lp.bottomMargin = effectiveBottom + 16;
+            binding.formatBar.setLayoutParams(lp);
+            if (binding.etContent.getVisibility() == View.VISIBLE) {
+                binding.formatBar.setVisibility(View.VISIBLE);
+            }
+            return insets;
+        });
+    }
+
+    private void setupUndoRedoHistory() {
+        undoStack.clear();
+        redoStack.clear();
+        pushUndoState("");
+        binding.etContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (!isProgrammaticTextChange) {
+                    pushUndoState(s == null ? "" : s.toString());
+                    redoStack.clear();
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void setupAttachmentPreview() {
@@ -197,7 +256,7 @@ public class NoteDetailFragment extends Fragment {
 
                                 currentEntry = entry;
                                 binding.etTitle.setText(entry.noteTitle);
-                                binding.etContent.setText(entry.noteContent);
+                                setEditorText(entry.noteContent == null ? "" : entry.noteContent);
                                 renderPreview();
                                 bindAudioNote(entry);
                             }, Throwable::printStackTrace)
@@ -358,6 +417,174 @@ public class NoteDetailFragment extends Fragment {
         }
 
         text.insert(lineStart, prefix);
+    }
+
+    private void insertMarkdownToken(String token) {
+        Editable text = binding.etContent.getText();
+        if (text == null) return;
+        int start = binding.etContent.getSelectionStart();
+        int end = binding.etContent.getSelectionEnd();
+        int min = Math.min(start, end);
+        int max = Math.max(start, end);
+        text.replace(min, max, token);
+        binding.etContent.setSelection(min + token.length());
+    }
+
+    private void insertCodeBlockTemplate() {
+        Editable text = binding.etContent.getText();
+        if (text == null) return;
+        int start = binding.etContent.getSelectionStart();
+        int end = binding.etContent.getSelectionEnd();
+        int min = Math.min(start, end);
+        int max = Math.max(start, end);
+        String selected = text.subSequence(min, max).toString();
+        String block = "```\n" + selected + "\n```";
+        text.replace(min, max, block);
+        int cursor = min + 4;
+        binding.etContent.setSelection(Math.min(cursor, text.length()));
+    }
+
+    private void showFormatBottomSheet() {
+        if (formatBottomSheetDialog != null && formatBottomSheetDialog.isShowing()) {
+            return;
+        }
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View sheet = LayoutInflater.from(requireContext()).inflate(R.layout.bottom_sheet_format_options, null, false);
+        dialog.setContentView(sheet);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(true);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            dialog.getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            );
+        }
+        formatBottomSheetDialog = dialog;
+
+        View close = sheet.findViewById(R.id.btn_sheet_close);
+        if (close != null) close.setOnClickListener(v -> dialog.dismiss());
+
+        sheet.findViewById(R.id.btn_sheet_bold).setOnClickListener(v -> insertMarkdown("**", "**"));
+        sheet.findViewById(R.id.btn_sheet_italic).setOnClickListener(v -> insertMarkdown("*", "*"));
+        sheet.findViewById(R.id.btn_sheet_strike).setOnClickListener(v -> insertMarkdown("~~", "~~"));
+
+        sheet.findViewById(R.id.btn_sheet_h1).setOnClickListener(v -> insertMarkdownAtLineStart("# "));
+        sheet.findViewById(R.id.btn_sheet_h2).setOnClickListener(v -> insertMarkdownAtLineStart("## "));
+        sheet.findViewById(R.id.btn_sheet_h3).setOnClickListener(v -> insertMarkdownAtLineStart("### "));
+        View heading = sheet.findViewById(R.id.btn_sheet_h1);
+        heading.setOnLongClickListener(v -> {
+            showHeadingSelector();
+            return true;
+        });
+        sheet.findViewById(R.id.btn_sheet_quote).setOnClickListener(v -> insertMarkdownAtLineStart("> "));
+        sheet.findViewById(R.id.btn_sheet_hr).setOnClickListener(v -> insertMarkdownToken("\n---\n"));
+
+        sheet.findViewById(R.id.btn_sheet_bullet).setOnClickListener(v -> insertMarkdownAtLineStart("- "));
+        sheet.findViewById(R.id.btn_sheet_number).setOnClickListener(v -> insertMarkdownAtLineStart("1. "));
+        sheet.findViewById(R.id.btn_sheet_task).setOnClickListener(v -> insertMarkdownAtLineStart("- [ ] "));
+
+        sheet.findViewById(R.id.btn_sheet_link).setOnClickListener(v -> insertMarkdown("[", "](url)"));
+        sheet.findViewById(R.id.btn_sheet_link).setOnLongClickListener(v -> {
+            insertMarkdownToken("[text](https://example.com)");
+            return true;
+        });
+        sheet.findViewById(R.id.btn_sheet_image).setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        sheet.findViewById(R.id.btn_sheet_table).setOnClickListener(v ->
+                insertMarkdownToken("\n| Col 1 | Col 2 |\n| --- | --- |\n|  |  |\n"));
+//        sheet.findViewById(R.id.btn_sheet_footnote).setOnClickListener(v -> insertMarkdownToken("[^1]"));
+
+        sheet.findViewById(R.id.btn_sheet_code_inline).setOnClickListener(v -> insertMarkdown("`", "`"));
+        sheet.findViewById(R.id.btn_sheet_code_block).setOnClickListener(v -> insertCodeBlockTemplate());
+        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnClickListener(v -> insertCodeBlockTemplate());
+        sheet.findViewById(R.id.btn_sheet_code_fenced).setOnLongClickListener(v -> {
+            showCodeVariantSelector();
+            return true;
+        });
+
+        sheet.findViewById(R.id.btn_sheet_sup).setOnClickListener(v -> insertMarkdown("^", "^"));
+        sheet.findViewById(R.id.btn_sheet_sub).setOnClickListener(v -> insertMarkdown("~", "~"));
+        sheet.findViewById(R.id.btn_sheet_emoji).setOnClickListener(v -> insertMarkdownToken(":smile:"));
+
+        dialog.show();
+    }
+
+    private String resolveImageLabel(Uri uri) {
+        String label = "image";
+        try (Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (nameIndex != -1) {
+                    String value = cursor.getString(nameIndex);
+                    if (value != null && !value.trim().isEmpty()) {
+                        label = value;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return label;
+    }
+
+    private void showHeadingSelector() {
+        String[] options = {"H1", "H2", "H3", "H4", "H5", "H6"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Heading level")
+                .setItems(options, (dialog, which) -> {
+                    int level = which + 1;
+                    StringBuilder prefix = new StringBuilder();
+                    for (int i = 0; i < level; i++) prefix.append('#');
+                    prefix.append(' ');
+                    insertMarkdownAtLineStart(prefix.toString());
+                })
+                .show();
+    }
+
+    private void showCodeVariantSelector() {
+        String[] options = {"Inline code", "Code block", "Fenced with language"};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Code format")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        insertMarkdown("`", "`");
+                    } else if (which == 1) {
+                        insertCodeBlockTemplate();
+                    } else {
+                        insertMarkdownToken("```java\n\n```");
+                    }
+                })
+                .show();
+    }
+
+    private void pushUndoState(String text) {
+        if (!undoStack.isEmpty() && undoStack.peekLast().equals(text)) return;
+        undoStack.addLast(text);
+        while (undoStack.size() > MAX_HISTORY_SIZE) undoStack.removeFirst();
+    }
+
+    private void performUndo() {
+        Editable editable = binding.etContent.getText();
+        if (editable == null || undoStack.size() <= 1) return;
+        String current = editable.toString();
+        String previous = undoStack.pollLast();
+        if (previous == null) return;
+        redoStack.addLast(current);
+        String target = undoStack.peekLast();
+        setEditorText(target == null ? "" : target);
+    }
+
+    private void performRedo() {
+        if (redoStack.isEmpty()) return;
+        String next = redoStack.pollLast();
+        pushUndoState(getText(binding.etContent));
+        setEditorText(next);
+    }
+
+    private void setEditorText(String value) {
+        isProgrammaticTextChange = true;
+        binding.etContent.setText(value);
+        binding.etContent.setSelection(Math.min(value.length(), value.length()));
+        isProgrammaticTextChange = false;
     }
 
     private void showAttachmentOptions() {
@@ -643,10 +870,11 @@ public class NoteDetailFragment extends Fragment {
 
                     currentAccentColor = color;
                     ColorStateList csl = ColorStateList.valueOf(color);
+                    binding.btnFormatUndo.setImageTintList(csl);
+                    binding.btnFormatRedo.setImageTintList(csl);
                     binding.btnFormatBold.setImageTintList(csl);
                     binding.btnFormatItalic.setImageTintList(csl);
-                    binding.btnFormatBullet.setImageTintList(csl);
-                    binding.btnFormatNumber.setImageTintList(csl);
+                    binding.btnFormatStrike.setImageTintList(csl);
                 }));
     }
 
@@ -669,6 +897,10 @@ public class NoteDetailFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (formatBottomSheetDialog != null) {
+            formatBottomSheetDialog.dismiss();
+            formatBottomSheetDialog = null;
+        }
         stopAudioPlayback();
         if (markdownPreviewRenderer != null) {
             markdownPreviewRenderer.release();

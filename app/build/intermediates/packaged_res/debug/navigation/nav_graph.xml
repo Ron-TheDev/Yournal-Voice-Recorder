@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.yournal.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_recycle_bin"
+        android:name="com.yournal.RecycleBinFragment"
+        android:label="@string/title_recycle_bin"
+        tools:layout="@layout/fragment_recycle_bin" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.yournal.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+        
+    <fragment
+        android:id="@+id/navigation_note_detail"
+        android:name="com.yournal.NoteDetailFragment"
+        android:label="Edit Note"
+        tools:layout="@layout/fragment_note_detail">
+        <argument
+            android:name="note_id"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <argument
+            android:name="note_title"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="note_content"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+    
+    <fragment
+        android:id="@+id/navigation_recorder"
+        android:name="com.yournal.RecorderFragment"
+        android:label="Recorder"
+        tools:layout="@layout/fragment_recorder" />
+        
+    <fragment
+        android:id="@+id/navigation_transcription"
+        android:name="com.yournal.TranscriptionFragment"
+        android:label="Transcription"
+        tools:layout="@layout/fragment_transcription" />
+</navigation>
